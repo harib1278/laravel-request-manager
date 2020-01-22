@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use GuzzleHttp\Client;
 
 class RequestController extends Controller
 {
@@ -13,7 +14,12 @@ class RequestController extends Controller
      */
     public function index()
     {
-        return view('index');
+        $client = new Client();
+
+        $response = $client->get('http://itemapi.stg/api/items');
+        $items = json_decode($response->getBody()->getContents());
+
+        return view('index')->with('items', $items);
     }
 
     /**
