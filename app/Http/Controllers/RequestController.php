@@ -90,7 +90,13 @@ class RequestController extends Controller
      */
     public function edit($id)
     {
-        //
+        $client = New Client();
+
+        $response = $client->get('http://itemapi.stg/api/items/'.$id);
+
+        $item = json_decode($response->getBody()->getContents());
+
+        return view('edit')->with('item', $item);
     }
 
     /**
@@ -102,7 +108,36 @@ class RequestController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+      // Validate the form input
+      $this->validate($request, [
+        'text' => 'required',
+        'body' => 'required'
+      ]);
+
+      // Assemble into params
+      $submission = http_build_query([
+        'text' => $request->input('text'),
+        'body' => $request->input('body'),
+        '_method' => 'PUT'
+      ]);
+
+      // New guzzle client
+      $client = New Client();
+
+      try {
+        // Submit the request to the api layer
+        $response = $client->post('http://itemapi.stg/api/items/'.$id.'?'.$submission);
+
+      } catch(RequestException $e) {
+        if ($e->hasResponse()) {
+          $msg = $e->getResponse();
+        } else {
+          $msg = 'Sorry there was an error';
+        }
+        return redirect()->to('/')->with('error', $msg);
+      }
+      return redirect()->to('/')->with('success', 'Item updated successfully');
+
     }
 
     /**
