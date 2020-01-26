@@ -148,6 +148,16 @@ class RequestController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $client = New Client();
+
+        $response = $client->post('http://itemapi.stg/api/items/'.$id.'?_method=DELETE');
+
+        $contents = json_decode($response->getBody()->getContents());
+
+        if ($contents->success){
+          return redirect()->to('/')->with('success', 'Item deleted successfully');
+        }
+
+        return redirect()->to('/')->with('error','There was an error with deletion');
     }
 }

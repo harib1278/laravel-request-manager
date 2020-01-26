@@ -12,6 +12,11 @@
               <small>{{$item->created_at}}</small>
             </div>
             <p class="mb-1">{{$item->body}}</p>
+            <form class="" action="/request/{{$item->id}}" method="post">
+              @csrf
+              @method('DELETE')
+              <button type="submit" class="btn btn-danger float-right" name="button">Delete</button>
+            </form>
           </a>
         @endforeach
       </div>
